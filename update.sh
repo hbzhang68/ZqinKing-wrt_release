@@ -154,7 +154,7 @@ install_small8() {
         luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
         luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
         luci-app-amlogic nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
-        easytier luci-app-easytier
+        zerotier luci-app-zerotier
 }
 
 install_feeds() {
@@ -546,7 +546,7 @@ function add_backup_info_to_sysupgrade() {
     if [ -f "$conf_path" ]; then
         cat >"$conf_path" <<'EOF'
 /etc/AdGuardHome.yaml
-/etc/easytier
+/etc/zerotier
 /etc/lucky/
 EOF
     fi
