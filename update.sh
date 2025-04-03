@@ -756,6 +756,7 @@ main() {
     add_timecontrol
     add_gecoosac
     install_feeds
+    update_package "zerotier"
     support_fw4_adg
     update_script_priority
     # update_proxy_app_menu_location
