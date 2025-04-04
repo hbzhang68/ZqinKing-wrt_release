@@ -154,7 +154,8 @@ install_small8() {
         luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
         luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
         luci-app-amlogic nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
-        zerotier luci-app-zerotier
+        zerotier luci-app-zerotier luci-app-poweroff luci-app-netspeedtest luci-app-argon-config \
+        luci-app-msd_lite
 }
 
 
@@ -172,25 +173,6 @@ install_feeds() {
         fi
     done
 }
-
-DTS_PATH="./target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/"
-
-
-    provided_config_lines+=(
-        "CONFIG_PACKAGE_hostapd-common=n"
-        "CONFIG_PACKAGE_wpad-openssl=n"
-    )
-
-    #find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\)\.dtsi/ipq\1-nowifi.dtsi/
-    #find "$DTS_PATH" -type f \( -name "ipq6018-256m.dtsi" -o -name "ipq8074-512m.dtsi" \) -exec sed -i \
-    #    -e 's/reg = <0x0 0x4ab00000 0x0 0x02800000>;/reg = <0x0 0x4ab00000 0x0 0x1000000>;/' \
-    #    -e 's/reg = <0x0 0x4b000000 0x0 0x3700000>;/reg = <0x0 0x4b000000 0x0 0x1000000>;/' {} +
-    #find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
-    #find "$DTS_PATH" -type f ! -iname '*nowifi*' -exec sed -i \
-    find "$DTS_PATH"  -exec sed -i \
-      -e '/#include "ipq6018.dtsi"/a #include "ipq6018-nowifi.dtsi"' \
-      -e '/#include "ipq8074.dtsi"/a #include "ipq8074-nowifi.dtsi"' {} +
-    echo "qualcommax set up nowifi successfully!"
  
  
 fix_default_set() {
