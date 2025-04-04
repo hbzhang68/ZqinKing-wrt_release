@@ -178,7 +178,7 @@ install_feeds() {
 
 DTS_PATH="./target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/"
 
-if [[ $FIRMWARE_TAG == *"NOWIFI"* ]]; then
+
     provided_config_lines+=(
         "CONFIG_PACKAGE_hostapd-common=n"
         "CONFIG_PACKAGE_wpad-openssl=n"
@@ -189,11 +189,12 @@ if [[ $FIRMWARE_TAG == *"NOWIFI"* ]]; then
     #    -e 's/reg = <0x0 0x4ab00000 0x0 0x02800000>;/reg = <0x0 0x4ab00000 0x0 0x1000000>;/' \
     #    -e 's/reg = <0x0 0x4b000000 0x0 0x3700000>;/reg = <0x0 0x4b000000 0x0 0x1000000>;/' {} +
     #find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
-    find "$DTS_PATH" -type f ! -iname '*nowifi*' -exec sed -i \
+    #find "$DTS_PATH" -type f ! -iname '*nowifi*' -exec sed -i \
+    find "$DTS_PATH"  -exec sed -i \
       -e '/#include "ipq6018.dtsi"/a #include "ipq6018-nowifi.dtsi"' \
       -e '/#include "ipq8074.dtsi"/a #include "ipq8074-nowifi.dtsi"' {} +
     echo "qualcommax set up nowifi successfully!"
- fi
+ 
  
 fix_default_set() {
     # 修改默认主题
