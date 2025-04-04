@@ -157,9 +157,6 @@ install_small8() {
         zerotier luci-app-zerotier
 }
 
-#speedtest
-UPDATE_PACKAGE "luci-app-netspeedtest" "https://github.com/sbwml/openwrt_pkgs.git" "main" "pkg"
-UPDATE_PACKAGE "speedtest-cli" "https://github.com/sbwml/openwrt_pkgs.git" "main" "pkg"
 
 install_feeds() {
     ./scripts/feeds update -i
