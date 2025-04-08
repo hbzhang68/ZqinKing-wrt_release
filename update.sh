@@ -714,12 +714,6 @@ update_dns_app_menu_location() {
     fi
 }
 
-remove_easytier_web() {
-    local easytier_path="$BUILD_DIR/package/feeds/small8/easytier/Makefile"
-    if [ -d "${easytier_path%/*}" ] && [ -f "$easytier_path" ]; then
-        sed -i '/easytier-web/d' "$easytier_path"
-    fi
-}
 
 update_geoip() {
     local geodata_path="$BUILD_DIR/package/feeds/small8/v2ray-geodata/Makefile"
@@ -784,7 +778,6 @@ main() {
     update_package "zerotier"
     support_fw4_adg
     update_script_priority
-    remove_easytier_web
     update_geoip
     # update_proxy_app_menu_location
     # update_dns_app_menu_location
