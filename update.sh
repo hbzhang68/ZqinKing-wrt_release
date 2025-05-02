@@ -139,6 +139,9 @@ update_golang() {
     fi
 }
 
+#luci-app-zerotier
+git clone https://github.com/rufengsuixing/luci-app-zerotier.git package/luci-app-zerotier
+
 install_small8() {
     ./scripts/feeds install -p small8 -f xray-core xray-plugin dns2tcp dns2socks haproxy hysteria \
         naiveproxy shadowsocks-rust sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin \
