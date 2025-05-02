@@ -86,7 +86,7 @@ update_feeds() {
 
 remove_unwanted_packages() {
     local luci_packages=(
-        "luci-app-passwall" "luci-app-smartdns" "luci-app-ddns-go" "luci-app-rclone"
+        "luci-app-passwall2" "luci-app-smartdns" "luci-app-ddns-go" "luci-app-rclone"
         "luci-app-ssr-plus" "luci-app-vssr" "luci-theme-argon" "luci-app-daed" "luci-app-dae"
         "luci-app-alist" "luci-app-argon-config" "luci-app-homeproxy" "luci-app-haproxy-tcp"
         "luci-app-openclash" "luci-app-mihomo" "luci-app-appfilter" "luci-app-msd_lite"
@@ -398,7 +398,7 @@ EOF
 }
 
 update_pw() {
-    local pw_share_dir="$BUILD_DIR/feeds/small8/luci-app-passwall/root/usr/share/passwall"
+    local pw_share_dir="$BUILD_DIR/feeds/small8/luci-app-passwall2/root/usr/share/passwall2"
     local smartdns_lua_path="$pw_share_dir/helper_smartdns_add.lua"
     local rules_dir="$pw_share_dir/rules"
 
