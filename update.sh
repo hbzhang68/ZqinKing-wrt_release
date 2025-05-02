@@ -139,20 +139,17 @@ update_golang() {
     fi
 }
 
-#luci-app-zerotier
-git clone https://github.com/rufengsuixing/luci-app-zerotier.git package/luci-app-zerotier
-
 install_small8() {
     ./scripts/feeds install -p small8 -f xray-core xray-plugin dns2tcp dns2socks haproxy hysteria \
         naiveproxy shadowsocks-rust sing-box v2ray-core v2ray-geodata v2ray-geoview v2ray-plugin \
         tuic-client chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev luci-app-uhttpd \
         luci-app-passwall2 alist luci-app-alist smartdns luci-app-smartdns v2dat mosdns luci-app-mosdns \
         adguardhome luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd \
-        luci-app-cloudflarespeedtest \
+        luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
         luci-app-pushbot luci-app-ramfree luci-app-acme luci-app-poweroff luci-app-upnp \
         luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
-        nikki luci-app-nikki  oaf open-app-filter luci-app-oaf \
-        msd_lite luci-app-msd_lite luci-app-argon-config 
+        nikki luci-app-nikki  tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
+        easytier luci-app-easytier msd_lite luci-app-msd_lite luci-app-argon-config 
 }
 
 install_feeds() {
@@ -542,6 +539,7 @@ function add_backup_info_to_sysupgrade() {
     if [ -f "$conf_path" ]; then
         cat >"$conf_path" <<'EOF'
 /etc/AdGuardHome.yaml
+/etc/easytier
 /etc/lucky/
 EOF
     fi
@@ -711,6 +709,12 @@ update_dns_app_menu_location() {
     fi
 }
 
+fix_easytier() {
+    local easytier_path="$BUILD_DIR/package/feeds/small8/luci-app-easytier/luasrc/model/cbi/easytier.lua"
+    if [ -d "${easytier_path%/*}" ] && [ -f "$easytier_path" ]; then
+        sed -i 's/util/xml/g' "$easytier_path"
+    fi
+}
 
 update_geoip() {
     local geodata_path="$BUILD_DIR/package/feeds/small8/v2ray-geodata/Makefile"
@@ -744,7 +748,7 @@ main() {
     update_golang
     change_dnsmasq2full
     fix_mk_def_depends
-    #add_wifi_default_set
+    add_wifi_default_set
     update_default_lan_addr
     remove_something_nss_kmod
     update_affinity_script
@@ -753,7 +757,7 @@ main() {
     # fix_mkpkg_format_invalid
     chanage_cpuusage
     update_tcping
-    #add_ax6600_led
+    add_ax6600_led
     set_custom_task
     update_pw
     install_opkg_distfeeds
@@ -767,7 +771,7 @@ main() {
     add_backup_info_to_sysupgrade
     optimize_smartDNS
     update_mosdns_deconfig
-    #fix_quickstart
+    fix_quickstart
     update_oaf_deconfig
     add_timecontrol
     add_gecoosac
@@ -775,7 +779,7 @@ main() {
     update_package "zerotier"
     support_fw4_adg
     update_script_priority
-    #fix_easytier
+    fix_easytier
     update_geoip
     update_package "xray-core"
     # update_proxy_app_menu_location
