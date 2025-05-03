@@ -149,7 +149,7 @@ install_small8() {
         luci-app-pushbot luci-app-ramfree luci-app-acme luci-app-poweroff luci-app-upnp \
         luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
         nikki luci-app-nikki  tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
-        easytier luci-app-easytier msd_lite luci-app-msd_lite luci-app-argon-config 
+        msd_lite luci-app-msd_lite luci-app-argon-config 
 }
 
 install_feeds() {
@@ -539,7 +539,7 @@ function add_backup_info_to_sysupgrade() {
     if [ -f "$conf_path" ]; then
         cat >"$conf_path" <<'EOF'
 /etc/AdGuardHome.yaml
-/etc/easytier
+/etc/zerotier
 /etc/lucky/
 EOF
     fi
@@ -709,12 +709,7 @@ update_dns_app_menu_location() {
     fi
 }
 
-fix_easytier() {
-    local easytier_path="$BUILD_DIR/package/feeds/small8/luci-app-easytier/luasrc/model/cbi/easytier.lua"
-    if [ -d "${easytier_path%/*}" ] && [ -f "$easytier_path" ]; then
-        sed -i 's/util/xml/g' "$easytier_path"
-    fi
-}
+
 
 update_geoip() {
     local geodata_path="$BUILD_DIR/package/feeds/small8/v2ray-geodata/Makefile"
@@ -779,7 +774,7 @@ main() {
     update_package "zerotier"
     support_fw4_adg
     update_script_priority
-    fix_easytier
+    #fix_easytier
     update_geoip
     update_package "xray-core"
     # update_proxy_app_menu_location
