@@ -147,7 +147,7 @@ install_small8() {
         luci-app-pushbot luci-app-ramfree luci-app-acme luci-app-poweroff luci-app-upnp \
         luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
         nikki luci-app-nikki  tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
-        msd_lite luci-app-msd_lite luci-app-argon-config 
+        luci-app-argon-config 
 }
 
 install_feeds() {
