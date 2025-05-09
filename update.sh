@@ -89,8 +89,7 @@ remove_unwanted_packages() {
         "luci-app-passwall2" "luci-app-smartdns" "luci-app-ddns-go" "luci-app-rclone"
         "luci-app-ssr-plus" "luci-app-vssr" "luci-theme-argon" "luci-app-daed" "luci-app-dae"
         "luci-app-alist" "luci-app-argon-config" "luci-app-homeproxy" "luci-app-haproxy-tcp"
-        "luci-app-openclash" "luci-app-mihomo" "luci-app-appfilter" "luci-app-msd_lite"
-        "luci-app-poweroff"
+        "luci-app-openclash"  "luci-app-appfilter" 
     )
     local packages_net=(
         "haproxy" "xray-core" "xray-plugin" "dns2socks" "alist" "hysteria"
@@ -743,7 +742,7 @@ main() {
     update_golang
     change_dnsmasq2full
     fix_mk_def_depends
-    add_wifi_default_set
+    # add_wifi_default_set
     update_default_lan_addr
     remove_something_nss_kmod
     update_affinity_script
@@ -752,7 +751,7 @@ main() {
     # fix_mkpkg_format_invalid
     chanage_cpuusage
     update_tcping
-    add_ax6600_led
+    # add_ax6600_led
     set_custom_task
     update_pw
     install_opkg_distfeeds
@@ -766,7 +765,7 @@ main() {
     add_backup_info_to_sysupgrade
     optimize_smartDNS
     update_mosdns_deconfig
-    fix_quickstart
+    # fix_quickstart
     update_oaf_deconfig
     add_timecontrol
     add_gecoosac
@@ -774,7 +773,7 @@ main() {
     update_package "zerotier"
     support_fw4_adg
     update_script_priority
-    #fix_easytier
+    # fix_easytier
     update_geoip
     update_package "xray-core"
     # update_proxy_app_menu_location
