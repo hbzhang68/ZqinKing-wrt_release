@@ -122,9 +122,9 @@ remove_unwanted_packages() {
     fi
 
     # ipq60xx不支持NSS offload mnet_rx
-    if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
-        rm -rf "$BUILD_DIR/feeds/nss_packages/wwan"
-    fi
+    # if grep -q "nss_packages" "$BUILD_DIR/$FEEDS_CONF"; then
+    #     rm -rf "$BUILD_DIR/feeds/nss_packages/wwan"
+    # fi
 
     # 临时放一下，清理脚本
     if [ -d "$BUILD_DIR/target/linux/qualcommax/base-files/etc/uci-defaults" ]; then
@@ -744,6 +744,12 @@ update_lucky() {
     fi
 }
 
+fix_rust_compile_error() {
+    if [ -f "$BUILD_DIR/feeds/packages/lang/rust/Makefile" ]; then
+        sed -i 's/download-ci-llvm=true/download-ci-llvm=false/g' "$BUILD_DIR/feeds/packages/lang/rust/Makefile"
+    fi
+}
+
 main() {
     clone_repo
     clean_up
@@ -784,6 +790,7 @@ main() {
     add_timecontrol
     add_gecoosac
     update_lucky
+    fix_rust_compile_error
     install_feeds
     update_package "zerotier"
     support_fw4_adg
