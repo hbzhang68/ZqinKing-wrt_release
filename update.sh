@@ -417,11 +417,9 @@ EOF
 
 update_pw() {
     local pw_share_dir="$BUILD_DIR/feeds/small8/luci-app-passwall2/root/usr/share/passwall2"
-    local smartdns_lua_path="$pw_share_dir/helper_smartdns_add.lua"
+
     local rules_dir="$pw_share_dir/rules"
 
-    # 清空chnlist
-    [ -f "$rules_dir/chnlist" ] && echo "" >"$rules_dir/chnlist"
 }
 
 install_opkg_distfeeds() {
