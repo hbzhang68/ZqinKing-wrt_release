@@ -863,6 +863,7 @@ main() {
     update_lucky
     fix_rust_compile_error
     update_smartdns_luci
+    update_diskman
     install_feeds
     update_package "zerotier"
     support_fw4_adg
