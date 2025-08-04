@@ -86,10 +86,10 @@ update_feeds() {
 
 remove_unwanted_packages() {
     local luci_packages=(
-        "luci-app-passwall2" "luci-app-smartdns" "luci-app-ddns-go" "luci-app-rclone"
-        "luci-app-ssr-plus" "luci-app-vssr" "luci-theme-argon" "luci-app-daed" "luci-app-dae"
-        "luci-app-alist" "luci-app-argon-config" "luci-app-homeproxy" "luci-app-haproxy-tcp"
-        "luci-app-openclash" "luci-app-mihomo" "luci-app-appfilter" "luci-app-msd_lite"
+        "luci-app-passwall" "luci-app-ddns-go" "luci-app-rclone" "luci-app-ssr-plus"
+        "luci-app-vssr" "luci-app-daed" "luci-app-dae" "luci-app-alist" "luci-app-homeproxy"
+        "luci-app-haproxy-tcp" "luci-app-openclash" "luci-app-mihomo" "luci-app-appfilter"
+        "luci-app-msd_lite"
     )
     local packages_net=(
         "haproxy" "xray-core" "xray-plugin" "dns2socks" "alist" "hysteria"
@@ -164,7 +164,7 @@ install_small8() {
         adguardhome luci-app-adguardhome ddns-go luci-app-ddns-go taskd luci-lib-xterm luci-lib-taskd \
         luci-app-store quickstart luci-app-quickstart luci-app-istorex luci-app-cloudflarespeedtest \
         luci-app-pushbot luci-app-ramfree luci-app-acme luci-app-poweroff luci-app-upnp docker dockerd \
-        luci-theme-argon netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
+        netdata luci-app-netdata lucky luci-app-lucky luci-app-openclash luci-app-homeproxy \
         nikki luci-app-nikki tailscale luci-app-tailscale oaf open-app-filter luci-app-oaf \
         luci-app-argon-config easytier luci-app-easytier msd_lite luci-app-msd_lite filebrowser \
         luci-app-filebrowsere cups luci-app-cupsd
@@ -579,30 +579,6 @@ function update_script_priority() {
     fi
 }
 
-function optimize_smartDNS() {
-    local smartdns_custom="$BUILD_DIR/feeds/small8/smartdns/conf/custom.conf"
-    local smartdns_patch="$BUILD_DIR/feeds/small8/smartdns/patches/010_change_start_order.patch"
-    install -Dm644 "$BASE_PATH/patches/010_change_start_order.patch" "$smartdns_patch"
-
-    # 检查配置文件所在的目录和文件是否存在
-    if [ -d "${smartdns_custom%/*}" ] && [ -f "$smartdns_custom" ]; then
-        # 优化配置选项：
-        # serve-expired-ttl: 缓存有效期(单位：小时)，默认值影响DNS解析速度
-        # serve-expired-reply-ttl: 过期回复TTL
-        # max-reply-ip-num: 最大IP数
-        # dualstack-ip-selection-threshold: IPv6优先的阈值
-        # server: 配置上游DNS
-        echo "优化SmartDNS配置"
-        cat >"$smartdns_custom" <<'EOF'
-serve-expired-ttl 7200
-serve-expired-reply-ttl 5
-max-reply-ip-num 3
-dualstack-ip-selection-threshold 15
-server 223.5.5.5 -bootstrap-dns
-EOF
-    fi
-}
-
 update_mosdns_deconfig() {
     local mosdns_conf="$BUILD_DIR/feeds/small8/luci-app-mosdns/root/etc/config/mosdns"
     if [ -d "${mosdns_conf%/*}" ] && [ -f "$mosdns_conf" ]; then
@@ -738,47 +714,23 @@ fix_rust_compile_error() {
 }
 
 update_smartdns() {
-    local feeds_dir="$BUILD_DIR/feeds/small8"
-    local luci_app_smartdns_path="$feeds_dir/luci-app-smartdns"
-    local old_smartdns_pkg_path="$feeds_dir/smartdns"
-    local new_smartdns_pkg_path="$feeds_dir/openwrt-smartdns"
-    local tmp_dir
-
-    echo "正在更新 luci-app-smartdns..."
-    # 删除旧版并克隆新版
-    \rm -rf "$luci_app_smartdns_path"
-    if ! git clone --depth 1 -b master https://github.com/pymumu/luci-app-smartdns.git "$luci_app_smartdns_path"; then
-        echo "错误：克隆 luci-app-smartdns 失败。" >&2
-        return 1
-    fi
-
-    # 修复 Makefile 中的路径
-    local makefile_path="$luci_app_smartdns_path/Makefile"
-    if [ -f "$makefile_path" ]; then
-        sed -i 's/\.\.\/\.\.\/luci\.mk/$(TOPDIR)\/feeds\/luci\/luci\.mk/g' "$makefile_path"
-    fi
+    # smartdns 仓库地址
+    local SMARTDNS_REPO="https://github.com/pymumu/openwrt-smartdns.git"
+    local SMARTDNS_DIR="$BUILD_DIR/feeds/packages/net/smartdns"
+    # luci-app-smartdns 仓库地址
+    local LUCI_APP_SMARTDNS_REPO="https://github.com/pymumu/luci-app-smartdns.git"
+    local LUCI_APP_SMARTDNS_DIR="$BUILD_DIR/feeds/luci/applications/luci-app-smartdns"
 
     echo "正在更新 smartdns..."
+    rm -rf "$SMARTDNS_DIR"
+    git clone --depth=1 "$SMARTDNS_REPO" "$SMARTDNS_DIR"
 
-    # 使用临时目录克隆
-    tmp_dir=$(mktemp -d)
-    if ! git clone --depth 1 -b master https://github.com/pymumu/openwrt-smartdns.git "$tmp_dir"; then
-        echo "错误：克隆 openwrt-smartdns 仓库失败。" >&2
-        rm -rf "$tmp_dir"
-        return 1
-    else
-        # 删除旧版
-        rm -rf "$old_smartdns_pkg_path"
-        mv "$tmp_dir" "$new_smartdns_pkg_path"
+    install -Dm644 "$BASE_PATH/patches/100-smartdns-optimize.patch" "$SMARTDNS_DIR/patches/100-smartdns-optimize.patch"
+    sed -i '/define Build\/Compile\/smartdns-ui/,/endef/s/CC=\$(TARGET_CC)/CC="\$(TARGET_CC_NOCACHE)"/' "$SMARTDNS_DIR/Makefile"
 
-        # 修复 Makefile 中的路径
-        makefile_path="$new_smartdns_pkg_path/Makefile"
-        if [ -f "$makefile_path" ]; then
-            sed -i 's/\.\.\/\.\.\/lang/$(TOPDIR)\/feeds\/packages\/lang/g' "$makefile_path"
-        fi
-    fi
-
-    echo "SmartDNS 更新完成。"
+    echo "正在更新 luci-app-smartdns..."
+    rm -rf "$LUCI_APP_SMARTDNS_DIR"
+    git clone --depth=1 "$LUCI_APP_SMARTDNS_REPO" "$LUCI_APP_SMARTDNS_DIR"
 }
 
 update_diskman() {
@@ -893,34 +845,21 @@ remove_tweaked_packages() {
     fi
 }
 
-# 修复 gettext 编译问题
-# @description: 当 gettext-full 版本为 0.24.1 时，从 OpenWrt 官方仓库更新 gettext-full 和 bison 的 Makefile 以解决编译问题。
-# @see: https://raw.githubusercontent.com/openwrt/openwrt/refs/heads/main/package/libs/gettext-full/Makefile
-# @see: https://raw.githubusercontent.com/openwrt/openwrt/refs/heads/main/tools/bison/Makefile
-fix_gettext_compile() {
-    local gettext_makefile_path="$BUILD_DIR/package/libs/gettext-full/Makefile"
-    local bison_makefile_path="$BUILD_DIR/tools/bison/Makefile"
+update_argon() {
+    local repo_url="https://github.com/jjm2473/luci-theme-argon.git"
+    local dst_theme_path="$BUILD_DIR/feeds/luci/themes/luci-theme-argon"
+    local tmp_dir=$(mktemp -d)
 
-    # 检查 gettext-full 的 Makefile 是否存在并且版本是否为 0.24.1
-    if [ -f "$gettext_makefile_path" ] && grep -q "PKG_VERSION:=0.24.1" "$gettext_makefile_path"; then
-        echo "检测到 gettext 版本为 0.24.1，正在更新 Makefiles..."
-        # 从 OpenWrt 官方仓库下载最新的 Makefile
-        curl -L -o "$gettext_makefile_path" "https://raw.githubusercontent.com/openwrt/openwrt/refs/heads/main/package/libs/gettext-full/Makefile"
-        curl -L -o "$bison_makefile_path" "https://raw.githubusercontent.com/openwrt/openwrt/refs/heads/main/tools/bison/Makefile"
+    echo "正在更新 argon 主题..."
 
+    git clone --depth 1 "$repo_url" "$tmp_dir"
 
-        # https://raw.githubusercontent.com/openwrt/packages/a4ad26b53f772c20b796715aef7ff458b5350781/libs/rpcsvc-proto/patches/0001-po-update-for-gettext-0.22.patch
-        # 使用以上补丁修复rpcsvc-proto编译错误
-        local rpcsvc_proto_dir="$BUILD_DIR/feeds/packages/libs/rpcsvc-proto"
-        if [ -d "$rpcsvc_proto_dir" ]; then
-            local patches_dir="$rpcsvc_proto_dir/patches"
-            local patch_name="0001-po-update-for-gettext-0.22.patch"
-            local patch_url="https://raw.githubusercontent.com/openwrt/packages/a4ad26b53f772c20b796715aef7ff458b5350781/libs/rpcsvc-proto/patches/$patch_name"
-            echo "正在为 rpcsvc-proto 添加 gettext 修复补丁..."
-            mkdir -p "$patches_dir"
-            curl -L -o "$patches_dir/$patch_name" "$patch_url"
-        fi
-    fi
+    rm -rf "$dst_theme_path"
+    rm -rf "$tmp_dir/.git"
+    mv "$tmp_dir" "$dst_theme_path"
+
+    echo "luci-theme-argon 更新完成"
+    echo "Argon 更新完毕。"
 }
 
 main() {
@@ -964,11 +903,11 @@ main() {
     add_quickfile
     update_lucky
     fix_rust_compile_error
-    # update_smartdns 暂不更新，openwrt-smartdns不适配
+    update_smartdns
     update_diskman
     set_nginx_default_config
     update_uwsgi_limit_as
-    fix_gettext_compile
+    update_argon
     install_feeds
     update_package "zerotier"
     support_fw4_adg
