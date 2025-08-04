@@ -894,7 +894,7 @@ main() {
     fix_compile_coremark
     update_dnsmasq_conf
     add_backup_info_to_sysupgrade
-    optimize_smartDNS
+    update_smartdns
     update_mosdns_deconfig
     fix_quickstart
     update_oaf_deconfig
